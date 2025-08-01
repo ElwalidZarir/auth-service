@@ -11,14 +11,17 @@ import com.example.auth_service.dto.RegisterRequest;
 @Component
 public class UserClient {
     private String baseUrl = "http://localhost:8082/users";
-    private RestTemplate restClient = new RestTemplate();
+    private RestClient restClient = RestClient.create();
 
     public void createUser(String username, String password, String email) {
         Map<String, String> req = Map.of(
                 "email", email,
                 "username", username,
                 "password", password);
-        restClient.postForEntity(baseUrl + "/register", req, Void.class);
+        restClient.post()
+                .uri(baseUrl + "/register")
+                .body(req)
+                .retrieve()
+                .toBodilessEntity();
     }
-
 }

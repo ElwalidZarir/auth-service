@@ -19,8 +19,8 @@ public class AuthContoller {
     private AuthService authService;
 
     @PostMapping("/register")
-    public AuthResponse register(@RequestBody RegisterRequest entity) {
-        return authService.register(entity);
+    public AuthResponse register(@RequestBody RegisterRequest request) {
+        return authService.register(request);
     }
 
 }
