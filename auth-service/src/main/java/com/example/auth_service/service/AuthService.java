@@ -20,10 +20,30 @@ public class AuthService {
     private PasswordEncoder passwordEncoder;
 
     public AuthResponse register(RegisterRequest request) {
-        String encryptedPassword = passwordEncoder.encode(request.password());
-        userClient.createUser(request.username(), encryptedPassword, request.email());
-        String token = jwt.generateToken(request.username());
+        try {
+            if (userClient.userExists(request.username(), request.email())) {
+                return new AuthResponse(null, "User already exists");
+            }
+            String encryptedPassword = passwordEncoder.encode(request.password());
+            userClient.createUser(request.username(), encryptedPassword, request.email());
+            String token = jwt.generateToken(request.username());
+            return new AuthResponse(token, null);
+        } catch (Exception e) {
+            return new AuthResponse(null, e.getMessage());
+        }
+    }
 
-        return new AuthResponse(token);
+    public AuthResponse login(LoginRequest request) {
+        try {
+            LoginRequest user = userClient.getUser(request.username()); 
+            if (!passwordEncoder.matches(request.password(), user.password())) {
+                return new AuthResponse(null, "Invalid username or password");
+            }
+            String token = jwt.generateToken(request.username());
+            return new AuthResponse(token, null);
+        } catch (Exception e) {
+            return new AuthResponse(null, e.getMessage());
+        }
+
     }
 }

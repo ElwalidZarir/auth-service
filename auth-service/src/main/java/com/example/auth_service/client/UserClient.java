@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import org.springframework.web.client.RestTemplate;
 
+import com.example.auth_service.dto.LoginRequest;
 import com.example.auth_service.dto.RegisterRequest;
 
 @Component
@@ -21,7 +22,36 @@ public class UserClient {
         restClient.post()
                 .uri(baseUrl + "/register")
                 .body(req)
-                .retrieve()
-                .toBodilessEntity();
+                .retrieve();
+    }
+
+    public LoginRequest getUser(String username) {
+        try {
+            return restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path(baseUrl + "/exists")
+                            .queryParam("username", username)
+                            .build())
+                    .retrieve()
+                    .body(LoginRequest.class);
+        } catch (Exception e) {
+            throw new RuntimeException("Error fetching user", e);
+        }
+    }
+
+    public boolean userExists(String username, String email) {
+        try {
+            Boolean exists = restClient.get()
+                    .uri(uriBuilder -> uriBuilder
+                            .path(baseUrl + "/exists")
+                            .queryParam("username", username)
+                            .queryParam("email", email)
+                            .build())
+                    .retrieve()
+                    .body(Boolean.class);
+            return exists != null && exists;
+        } catch (Exception e) {
+            throw new RuntimeException("Error checking user existence", e);
+        }
     }
 }
