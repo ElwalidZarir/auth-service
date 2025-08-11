@@ -12,7 +12,7 @@ import com.example.auth_service.client.UserClient;
 import com.example.auth_service.dto.AuthResponse;
 import com.example.auth_service.dto.LoginRequest;
 import com.example.auth_service.dto.RegisterRequest;
-import com.example.auth_service.dto.RegisterResponseDTO;
+import com.example.auth_service.dto.ResponseDTO;
 import com.example.auth_service.security.JwtProvider;
 import com.example.auth_service.exception.UserCreationFailed;
 
@@ -28,7 +28,7 @@ public class AuthService {
     public AuthResponse register(RegisterRequest request) throws UserCreationFailed {
         String encryptedPassword = passwordEncoder.encode(request.password());
 
-        ResponseEntity<RegisterResponseDTO> res = userClient.createUser(request.username(), encryptedPassword,
+        ResponseEntity<ResponseDTO> res = userClient.createUser(request.username(), encryptedPassword,
                 request.email());
         if (res.getStatusCode().is2xxSuccessful()) {
             String token = jwt.generateToken(request.username());
@@ -42,19 +42,18 @@ public class AuthService {
         throw new UserCreationFailed(errorMessage);
     }
 
-    /*
-     * public AuthResponse login(LoginRequest request) {
-     * try {
-     * LoginRequest user = userClient.getUser(request.username());
-     * if (!passwordEncoder.matches(request.password(), user.password())) {
-     * return new AuthResponse(null, "Invalid username or password");
-     * }
-     * String token = jwt.generateToken(request.username());
-     * return new AuthResponse(token, null);
-     * } catch (Exception e) {
-     * return new AuthResponse(null, e.getMessage());
-     * }
-     * 
-     * }
-     */
+    public AuthResponse login(LoginRequest request) {
+        try {
+            LoginRequest user = userClient.getUser(request.username());
+            if (!passwordEncoder.matches(request.password(), user.password())) {
+                return new AuthResponse(null, "Invalid username or password");
+            }
+            String token = jwt.generateToken(request.username());
+            return new AuthResponse(token, null);
+        } catch (Exception e) {
+            return new AuthResponse(null, e.getMessage());
+        }
+
+    }
+
 }
