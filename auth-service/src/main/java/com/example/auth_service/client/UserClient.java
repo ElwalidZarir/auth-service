@@ -34,9 +34,9 @@ public class UserClient {
                     .body(req)
                     .retrieve()
                     .toEntity(ResponseDTO.class);
-        } catch (RestClientResponseException  e) {
+        } catch (RestClientResponseException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                    .body(new ResponseDTO(e.getStatusCode() ,e.getMessage(), "user already exists"));
+                    .body(new ResponseDTO(null, e.getStatusCode(), e.getMessage(), "user already exists"));
 
         }
 

@@ -25,19 +25,19 @@ public class AuthContoller {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponse> register(@RequestBody RegisterRequest request) {
+    public ResponseEntity<ResponseDTO> register(@RequestBody RegisterRequest request) {
 
         try {
             return ResponseEntity.ok().body(authService.register(request));
         } catch (UserCreationFailed e) {
-            return ResponseEntity.badRequest().body(new AuthResponse(null, e.getMessage()));
+            return ResponseEntity.badRequest().body(new ResponseDTO(null,HttpStatus.BAD_REQUEST, e.getMessage(), "error creating the user"));
         }
 
     }
-
+/* 
     @PostMapping("/login")
     public AuthResponse login(@RequestBody LoginRequest request) {
         return authService.login(request);
     }
-
+ */
 }

@@ -1,4 +1,6 @@
 package com.example.auth_service.dto;
 
-public record AuthResponse(String token, String error) {
+import org.springframework.http.HttpStatusCode;
+
+public record AuthResponse(HttpStatusCode status, String token, String error) {
 }

@@ -25,14 +25,14 @@ public class AuthService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    public AuthResponse register(RegisterRequest request) throws UserCreationFailed {
+    public ResponseDTO register(RegisterRequest request) throws UserCreationFailed {
         String encryptedPassword = passwordEncoder.encode(request.password());
 
         ResponseEntity<ResponseDTO> res = userClient.createUser(request.username(), encryptedPassword,
                 request.email());
         if (res.getStatusCode().is2xxSuccessful()) {
             String token = jwt.generateToken(request.username());
-            return new AuthResponse(token, null);
+            return new ResponseDTO(token, res.getStatusCode(), null, "User successfully created");
 
         }
         String errorMessage = (res.getBody() != null && res.getBody().message() != null)
@@ -42,7 +42,7 @@ public class AuthService {
         throw new UserCreationFailed(errorMessage);
     }
 
-    public AuthResponse login(LoginRequest request) {
+    /* public AuthResponse login(LoginRequest request) {
         try {
             LoginRequest user = userClient.getUser(request.username());
             if (!passwordEncoder.matches(request.password(), user.password())) {
@@ -54,6 +54,6 @@ public class AuthService {
             return new AuthResponse(null, e.getMessage());
         }
 
-    }
+    } */
 
 }
